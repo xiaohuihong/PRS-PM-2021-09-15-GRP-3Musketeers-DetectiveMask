@@ -7,7 +7,7 @@ def preprocess_face_frame(face_frame):
     # convert to RGB
     face_frame = cv2.cvtColor(face_frame, cv2.COLOR_BGR2RGB)
     # preprocess input image for mobilenet
-    face_frame_resized = cv2.resize(face_frame, (224, 224))
+    face_frame_resized = cv2.resize(face_frame, (128, 128))
     face_frame_array = img_to_array(face_frame_resized)
     return face_frame_array
 

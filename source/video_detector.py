@@ -8,11 +8,13 @@ from tensorflow.python.keras.applications.mobilenet_v2 import preprocess_input
 
 from source.utils import preprocess_face_frame, decode_prediction, write_bb, load_cascade_detector
 
-model = keras.models.load_model('F:\\NUS-ISS Intelligent Systems\\2. Pattern Recognition Systems\\Practice Module\\PRS-PM-2021-09-15-GRP-3Musketeers-DetectiveMask\\models\\mask_mobilenet.h5')
+model = keras.models.load_model('F:\\NUS-ISS Intelligent Systems\\2. Pattern Recognition Systems\\Practice Module\\PRS-PM-2021-09-15-GRP-3Musketeers-DetectiveMask\\models\\mask_mobilenet.hdf5')
 face_detector = load_cascade_detector()
 
 
 def video_mask_detector():
+    # src=0, use system camera
+    # src=1, use phone camera
     video = VideoStream(src=0).start()
     time.sleep(1.0)
     while True:
@@ -61,7 +63,8 @@ def detect_mask_in_frame(frame):
         faces_dict["faces_rect"].append(rect)
 
     if faces_dict["faces_list"]:
-        faces_preprocessed = preprocess_input(np.array(faces_dict["faces_list"]))
+        faces_preprocessed = np.array(faces_dict["faces_list"])
+        faces_preprocessed = faces_preprocessed.astype('float32')/255
         preds = model.predict(faces_preprocessed)
 
         for i, pred in enumerate(preds):

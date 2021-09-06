@@ -42,12 +42,8 @@ def detect_mask_in_image(image):
         faces_dict["faces_rect"].append(rect)
 
     if faces_dict["faces_list"]:
-        faces_preprocessed = np.array(faces_dict["faces_list"])
-        faces_preprocessed = faces_preprocessed.astype('float32')/255
+        faces_preprocessed = preprocess_input(np.array(faces_dict["faces_list"]))
         preds = model.predict(faces_preprocessed)
-        print("=============================================")
-        print(preds)
-        print("=============================================")
         for i, pred in enumerate(preds):
             mask_or_not, confidence = decode_prediction(pred)
             write_bb(mask_or_not, confidence, faces_dict["faces_rect"][i], clone_image)
