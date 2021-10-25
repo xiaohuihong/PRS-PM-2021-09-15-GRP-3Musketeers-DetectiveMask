@@ -5,10 +5,13 @@ import imutils
 from imutils.video import VideoStream
 from tensorflow import keras
 from tensorflow.python.keras.applications.mobilenet_v2 import preprocess_input
+import os
 
 from source.utils import preprocess_face_frame, decode_prediction, write_bb, load_cascade_detector
 
-model = keras.models.load_model('F:\\NUS-ISS Intelligent Systems\\2. Pattern Recognition Systems\\Practice Module\\PRS-PM-2021-09-15-GRP-3Musketeers-DetectiveMask\\models\\mask_mobilenet.hdf5')
+#model = keras.models.load_model('F:\\NUS-ISS Intelligent Systems\\2. Pattern Recognition Systems\\Practice Module\\PRS-PM-2021-09-15-GRP-3Musketeers-DetectiveMask\\models\\mask_mobilenet.hdf5')
+model_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath("__file__")), "..")) + "\\models\\mask_mobilenet.hdf5"
+model = keras.models.load_model(model_path)
 face_detector = load_cascade_detector()
 
 

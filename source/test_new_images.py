@@ -5,12 +5,22 @@ from tensorflow import keras
 import cv2
 import numpy as np
 from tensorflow.python.keras.applications.mobilenet_v2 import preprocess_input
+import requests
+import subprocess
+import pathlib
+import telepot
+from PIL import Image  
+import PIL  
+import matplotlib
 
 from source.utils import load_cascade_detector, preprocess_face_frame, decode_prediction, write_bb
 
 POSSIBLE_EXT = [".png", ".jpg", ".jpeg"]
 
-model = keras.models.load_model('F:\\NUS-ISS Intelligent Systems\\2. Pattern Recognition Systems\\Practice Module\\PRS-PM-2021-09-15-GRP-3Musketeers-DetectiveMask\\models\\mask_mobilenet.hdf5')
+#model = keras.models.load_model('F:\\NUS-ISS Intelligent Systems\\2. Pattern Recognition Systems\\Practice Module\\PRS-PM-2021-09-15-GRP-3Musketeers-DetectiveMask\\models\\mask_mobilenet.hdf5')
+model_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath("__file__")), "..")) + "\\models\\mask_mobilenet.hdf5"
+model = keras.models.load_model(model_path)
+
 face_detector_model = load_cascade_detector()
 
 
@@ -51,9 +61,15 @@ def detect_mask_in_image(image):
         for i, pred in enumerate(preds):
             mask_or_not, confidence = decode_prediction(pred)
             write_bb(mask_or_not, confidence, faces_dict["faces_rect"][i], clone_image)
-
+    print (mask_or_not)
+    print (pathlib.Path().resolve())
+    if mask_or_not == 'No mask': 
+        im = Image.fromarray(gray)
+        im.save("tele.jpeg")
+        files = {'photo' :open('tele.jpeg','rb')}
+        requests.post('https://api.telegram.org/bot2082046165:AAHSgQj1eJB_9LapseXcFtR1EGslk0k99ig/sendPhoto?chat_id=-718206058&caption=No mask detected',files=files)
     return clone_image
-
+    
 
 def test_on_custom_image(path):
     filename, file_extension = os.path.splitext(path)
