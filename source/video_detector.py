@@ -6,6 +6,13 @@ from imutils.video import VideoStream
 from tensorflow import keras
 from tensorflow.python.keras.applications.mobilenet_v2 import preprocess_input
 import os
+import requests
+import subprocess
+import pathlib
+from PIL import Image  
+import PIL  
+import matplotlib
+import datetime
 
 from source.utils import preprocess_face_frame, decode_prediction, write_bb, load_cascade_detector
 
@@ -13,6 +20,9 @@ from source.utils import preprocess_face_frame, decode_prediction, write_bb, loa
 model_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath("__file__")), "..")) + "\\models\\mask_mobilenet.hdf5"
 model = keras.models.load_model(model_path)
 face_detector = load_cascade_detector()
+
+tele_timerglob = datetime.datetime.now()
+
 
 
 def video_mask_detector():
@@ -23,7 +33,6 @@ def video_mask_detector():
     while True:
         # Capture frame-by-frame
         frame = video.read()
-
         frame = detect_mask_in_frame(frame)
         # Display the resulting frame
         # show the output frame
@@ -73,7 +82,17 @@ def detect_mask_in_frame(frame):
         for i, pred in enumerate(preds):
             mask_or_not, confidence = decode_prediction(pred)
             write_bb(mask_or_not, confidence, faces_dict["faces_rect"][i], frame)
+        future_time = globals()['tele_timerglob'] + datetime.timedelta(seconds=30)
+        time_now = datetime.datetime.now()
 
+        if mask_or_not == 'No mask' and time_now >= future_time: 
+            globals()['tele_timerglob']  = datetime.datetime.now()
+            im = Image.fromarray(gray)
+            im.save("tele.jpeg")
+            files = {'photo' :open('tele.jpeg','rb')}
+            text_to_post = "https://api.telegram.org/bot2082046165:AAHSgQj1eJB_9LapseXcFtR1EGslk0k99ig/sendPhoto?chat_id=-718206058&caption=No mask detected on " + str(datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            requests.post(text_to_post,files=files)
+            
     return frame
 
 
