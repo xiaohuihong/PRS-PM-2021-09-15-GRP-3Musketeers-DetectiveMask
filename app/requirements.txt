@@ -1,0 +1,8 @@
+flask
+opencv-python
+pillow
+flask_wtf
+imutils
+tensorflow
+telepot
+matplotlib
