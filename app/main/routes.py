@@ -4,17 +4,21 @@ from io import BytesIO
 import cv2
 import numpy as np
 from PIL import Image
-from flask import render_template, Response, flash
+from flask import render_template, Response, flash, request, send_from_directory
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed
 from werkzeug.exceptions import abort
+from werkzeug.utils import secure_filename
 from wtforms import FileField, SubmitField
 from app.main.__inti__ import main_bp
 from app.main.camera import Camera
+import urllib.request
+import os
 
 from source.test_new_images import detect_mask_in_image
-from source.video_detector import detect_mask_in_frame
+from source.video_detector import detect_mask_in_frame, static_video_mask_detector
 
+upload_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath("__file__")), "..\\PRS-PM-2021-09-15-GRP-3Musketeers-DetectiveMask-main")) + "\\app\\static\\uploads\\"
 
 @main_bp.route("/")
 def home_page():
@@ -39,11 +43,17 @@ def video_feed():
         mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
+@main_bp.route('/video-mask-detector')
+def video_mask_detection():
+    return render_template("video_detector.html",
+                           form=VideoMaskForm())
+
+
+
 def allowed_file(filename):
     ext = filename.split(".")[-1]
     is_good = ext in ["jpg", "jpeg", "png"]
     return is_good
-
 
 @main_bp.route("/image-mask-detector", methods=["GET", "POST"])
 def image_mask_detection():
@@ -79,3 +89,33 @@ class PhotoMaskForm(FlaskForm):
                           FileAllowed(['jpg', 'jpeg', 'png'], 'The allowed extensions are: .jpg, .jpeg and .png')])
 
     submit = SubmitField('Detect mask')
+    
+# form
+class VideoMaskForm(FlaskForm):
+    image = FileField('Choose video:',
+                      validators=[
+                          FileAllowed(['mp4'], 'The allowed extensions are: .mp4')])
+
+    submit = SubmitField('Detect mask')
+ 
+ 
+@main_bp.route('/video-processing', methods=['POST', 'GET'])
+def upload_video():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No image selected for uploading')
+            return redirect(request.url)
+        else:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(upload_path, filename))
+            static_video_mask_detector(os.path.join(upload_path, filename))
+            flash('Video successfully uploaded and displayed below')
+            return render_template('video_detector.html', filename=filename)
+    else:
+        return render_template('video_detector.html')
+        
+
