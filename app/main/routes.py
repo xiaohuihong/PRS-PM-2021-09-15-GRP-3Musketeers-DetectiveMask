@@ -111,11 +111,37 @@ def upload_video():
             return redirect(request.url)
         else:
             filename = secure_filename(file.filename)
-            file.save(os.path.join(upload_path, filename))
-            static_video_mask_detector(os.path.join(upload_path, filename))
-            flash('Video successfully uploaded and displayed below')
+            file.save(os.path.join(upload_path, 'update2.mp4'))
+            #static_video_mask_detector(os.path.join(upload_path, filename))
+            #flash('Video successfully uploaded and displayed below')
             return render_template('video_detector.html', filename=filename)
     else:
         return render_template('video_detector.html')
         
+@main_bp.route('/video_feed_two')
+def video_feed_two():
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+def gen_frames(): 
+    vid_cap= cv2.VideoCapture(os.path.join(upload_path, 'update2.mp4'))
+    fps = vid_cap.get(cv2.CAP_PROP_FPS)
+    w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    while(vid_cap.isOpened()):
+        ret, frame = vid_cap.read()
+        if ret == False:
+            break;
+        
+        frame_processed = detect_mask_in_frame(frame)
+        frame_processed = cv2.imencode('.jpg', frame_processed)[1].tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_processed + b'\r\n')
+        key = cv2.waitKey(1) & 0xFF
+        # if the `q` key was pressed, break from the loop
+        if key == ord("q"):
+            break
+    vid_cap.release()
+    cv2.destroyAllWindows()
+    
 
