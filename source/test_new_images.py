@@ -12,6 +12,7 @@ import telepot
 from PIL import Image  
 import PIL  
 import matplotlib
+import datetime
 
 from source.utils import load_cascade_detector, preprocess_face_frame, decode_prediction, write_bb
 
@@ -67,7 +68,8 @@ def detect_mask_in_image(image):
         im = Image.fromarray(gray)
         im.save("tele.jpeg")
         files = {'photo' :open('tele.jpeg','rb')}
-        requests.post('https://api.telegram.org/bot2082046165:AAHSgQj1eJB_9LapseXcFtR1EGslk0k99ig/sendPhoto?chat_id=-718206058&caption=No mask detected',files=files)
+        text_to_post = "https://api.telegram.org/bot2082046165:AAHSgQj1eJB_9LapseXcFtR1EGslk0k99ig/sendPhoto?chat_id=-718206058&caption=No mask detected on " + str(datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        requests.post(text_to_post,files=files)
     return clone_image
     
 
