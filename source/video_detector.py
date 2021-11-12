@@ -18,39 +18,13 @@ from source.utils import preprocess_face_frame, decode_prediction, write_bb, loa
 
 #model = keras.models.load_model('F:\\NUS-ISS Intelligent Systems\\2. Pattern Recognition Systems\\Practice Module\\PRS-PM-2021-09-15-GRP-3Musketeers-DetectiveMask\\models\\mask_mobilenet.hdf5')
 model_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath("__file__")), "..")) + "\\models\\mask_mobilenet.hdf5"
-out_path =  os.path.abspath(os.path.join(os.path.dirname(os.path.realpath("__file__")), "..\\PRS-PM-2021-09-15-GRP-3Musketeers-DetectiveMask-main")) + "\\app\\static\\uploads\\out.avi"
 model = keras.models.load_model(model_path)
 face_detector = load_cascade_detector()
 
 tele_timerglob = datetime.datetime.now()
 
-def static_video_mask_detector(filename):
-    vid_cap= cv2.VideoCapture(filename)
-    fps = vid_cap.get(cv2.CAP_PROP_FPS)
-    w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    out = cv2.VideoWriter(out_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
-    while(vid_cap.isOpened()):
-        ret, frame = vid_cap.read()
-        if ret == False:
-            break;
-        frame = detect_mask_in_frame(frame)
-        
-        # Display the resulting frame
-        cv2.imshow("Mask detector", frame)
-        # write the output frame
-        out.write(frame)
-        
-        key = cv2.waitKey(1) & 0xFF
-        # if the `q` key was pressed, break from the loop
-        if key == ord("q"):
-            break
-    vid_cap.release()
-    out.release()
-    cv2.destroyAllWindows()
 
-
-def video_mask_detector():
+ def video_mask_detector():
     # src=0, use system camera
     # src=1, use phone camera
     video = VideoStream(src=0).start()
