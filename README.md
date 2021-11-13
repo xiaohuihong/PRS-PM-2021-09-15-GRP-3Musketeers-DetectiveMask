@@ -2,6 +2,6 @@
 * conda create -n detective_mask python=3.7 
 * conda activate detective_mask 
 * pip install -r app/requirements.txt
-* python __init__.py
+* python app/__init__.py
 
  
