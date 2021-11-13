@@ -59,14 +59,14 @@ def detect_mask_in_frame(frame):
                                            minSize=(40, 40),
                                            flags=cv2.CASCADE_SCALE_IMAGE,
                                            )
-
+    clone_frame = frame.copy()
     faces_dict = {"faces_list": [],
                   "faces_rect": []
                   }
 
     for rect in faces:
         (x, y, w, h) = rect
-        face_frame = frame[y:y + h, x:x + w]
+        face_frame = clone_frame[y:y + h, x:x + w]
         # preprocess image
         face_frame_prepared = preprocess_face_frame(face_frame)
 
@@ -80,7 +80,7 @@ def detect_mask_in_frame(frame):
 
         for i, pred in enumerate(preds):
             mask_or_not, confidence = decode_prediction(pred)
-            write_bb(mask_or_not, confidence, faces_dict["faces_rect"][i], frame)
+            write_bb(mask_or_not, confidence, faces_dict["faces_rect"][i], clone_frame)
         future_time = globals()['tele_timerglob'] + datetime.timedelta(seconds=30)
         time_now = datetime.datetime.now()
 
@@ -92,7 +92,7 @@ def detect_mask_in_frame(frame):
             text_to_post = "https://api.telegram.org/bot2082046165:AAHSgQj1eJB_9LapseXcFtR1EGslk0k99ig/sendPhoto?chat_id=-718206058&caption=No mask detected on " + str(datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"))
             requests.post(text_to_post,files=files)
             
-    return frame
+    return clone_frame
 
 
 if __name__ == '__main__':
