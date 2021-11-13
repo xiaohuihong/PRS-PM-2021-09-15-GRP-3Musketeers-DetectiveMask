@@ -18,7 +18,7 @@ import os
 from source.test_new_images import detect_mask_in_image
 from source.video_detector import detect_mask_in_frame
 
-upload_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath("__file__")), "..\\PRS-PM-2021-09-15-GRP-3Musketeers-DetectiveMask-main")) + "\\app\\static\\uploads\\"
+upload_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath("__file__")), "..")) + "\\app\\static\\uploads\\"
 
 @main_bp.route("/")
 def home_page():
