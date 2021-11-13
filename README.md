@@ -3,8 +3,9 @@
 ```bash
 (base) $ conda create -n detective_mask python=3.7
 (base) $ conda activate detective_mask 
-(detective_mask) $ pip install -r app/requirements.txt
-(detective_mask) $ python app/__init__.py
+(detective_mask) $ cd app
+(detective_mask) $ pip install -r requirements.txt
+(detective_mask) $ python __init__.py
 ```
 
  
