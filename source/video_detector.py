@@ -24,7 +24,7 @@ face_detector = load_cascade_detector()
 tele_timerglob = datetime.datetime.now()
 
 
- def video_mask_detector():
+def video_mask_detector():
     # src=0, use system camera
     # src=1, use phone camera
     video = VideoStream(src=0).start()
